@@ -1,0 +1,65 @@
+go_max_procs: 1
+log:
+  log_dir: logs
+inputs:
+  - Packet:
+      capture:
+        enabled: true
+        device_type: white
+        device: ["lo0"]
+        snapshot_len: 65535
+        promiscuous: true
+        output: ""  # 把该项设置为空则不会输出pcap文件，设置为file则会输出pcap文件
+        output_file:
+          new_file_interval: 1m
+          pcap_dir: pcap_dir
+      handler:
+        channel_size: 100
+        # id_file: id.bin
+        # flush_interval: 5s
+      upload:
+        enabled: true # 测试用的
+        source: live_packet
+        pcap_dir: pcap_dir
+        cursor_type: file
+        cursor_config:
+          file: cursor.json
+          flush_interval: 1s
+        save_pcap_file: false
+# filters:
+  # - FlowDirection:
+  #     service_public_ip: ["127.0.0.1"]
+  #     target: flow_direction
+outputs:
+  # - Terminal:
+  #     xx: yy
+  # - Elasticsearch:
+  #     channel_size: 10
+  #     addrs: ["http://127.0.0.1:9200"]
+  #     index: packet
+  # #     pipeline: packet-geoip
+  # - Clickhouse:
+  #     channel_size: 10
+  #     addr: 10.251.29.251:9000
+  #     database: traffic
+  #     username: ''
+  #     password: ''
+  #     table: gopacket
+
+  # - Clickhouse:
+  #     channel_size: 10
+  #     addr: 10.251.29.251:9000
+  #     database: traffic
+  #     username: ''
+  #     password: ''
+  #     table: interval_traffic
+
+  - SizeRecord:
+      channel_size: 10
+      addr: 10.251.29.251:9000
+      database: traffic
+      username: ''
+      password: ''
+      table: interval_traffic
+      interval: 1s
+      timeout: 2s

@@ -1,0 +1,34 @@
+# go_max_procs: 2
+log:
+  log_dir: logs
+inputs:
+  - Packet:
+      capture:
+        enabled: true
+        device_type: white
+        device: ["ens2f1"]
+        snapshot_len: 1024
+        promiscuous: true
+        output: file
+        output_file:
+          new_file_interval: 1m
+          pcap_dir: traffic/pcap_dir
+      handler:
+        channel_size: 100
+      upload:
+        enabled: true
+        source: live_packet
+        pcap_dir: traffic/pcap_dir
+        cursor_type: file
+        cursor_config:
+          file: traffic/cursor.json
+          flush_interval: 1s
+filters:
+  - FlowDirection:
+      service_public_ip: ["127.0.0.1"]
+      target: flow_direction
+outputs:
+  - Kafka:
+      channel_size: 10
+      addrs: ["kafka-01.voneyun.com:9092" ,"kafka-02.voneyun.com:9092" ,"kafka-03.voneyun.com:9092" ,"kafka-04.voneyun.com:9092" ,"kafka-05.voneyun.com:9092"]
+      topic: traffic-uat

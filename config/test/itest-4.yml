@@ -1,0 +1,30 @@
+# 只开启上传模块，上传模块从指定目录读取待上传文件，上传完毕后程序退出
+go_max_procs: 4
+log:
+  log_dir: logs
+inputs:
+  - Packet:
+      capture:
+        enabled: false
+      handler:
+        channel_size: 10
+        id_file: id.bin
+        flush_interval: 5s
+      upload:
+        enabled: true
+        source: file
+        pcap_dir: pcap_dir
+        cursor_type: file
+        cursor_config:
+          file: sample.json
+          flush_interval: 1s
+filters:
+  - FlowDirection:
+      service_public_ip: ["127.0.0.1"]
+      target: flow_direction
+outputs:
+  - Elasticsearch:
+      channel_size: 10
+      addrs: ["http://127.0.0.1:9200"]
+      index: packet
+      pipeline: packet-geoip

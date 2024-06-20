@@ -1,0 +1,38 @@
+# 抓取模块和上传模块都开启，上传模块数据来源为实时数据包
+go_max_procs: 4
+log:
+  log_dir: logs
+inputs:
+  - Packet:
+      capture:
+        enabled: true
+        device_type: white
+        device: ["en0"]
+        snapshot_len: 1024
+        promiscuous: false
+        output: file
+        output_file: 
+          new_file_interval: 1m
+          pcap_dir: pcap_dir
+      handler:
+        channel_size: 10
+        id_file: id.bin
+        flush_interval: 5s
+      upload:
+        enabled: true
+        source: live_packet
+        pcap_dir: pcap_dir
+        cursor_type: file
+        cursor_config:
+          file: sample.json
+          flush_interval: 1s
+filters:
+  - FlowDirection:
+      service_public_ip: ["127.0.0.1"]
+      target: flow_direction
+outputs:
+  - Elasticsearch:
+      channel_size: 10
+      addrs: ["http://127.0.0.1:9200"]
+      index: packet
+      pipeline: packet-geoip
