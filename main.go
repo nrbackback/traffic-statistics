@@ -16,6 +16,7 @@ import (
 	"traffic-statistics/pkg/log"
 )
 
+// test
 var configFile = flag.String("c", "config/config.yml", "config file")
 
 // exitWhenNil 只需要在只开启上传模块的时候配置为 true
